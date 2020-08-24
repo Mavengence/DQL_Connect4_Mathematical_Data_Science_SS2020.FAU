@@ -14,7 +14,7 @@ Reinforcement learning of Connect4 against the famous Minimax algorithm
 Clone the repository, to get our Notebooks, Presentation and Project Report.
 
 ```
-git clone https://github.com/Mavengence/Pattern_Analysis_SS20_FAU.git
+git clone https://github.com/Mavengence/DQL_Connect4_Mathematical_Data_Science_SS2020.FAU.git
 ```
 
 ### Links to Ressources
