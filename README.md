@@ -42,6 +42,8 @@ Just pull the repo, if you wanna change sth you can ask :)
 ## Authors
 
 * **Tim Löhr** - [GitHub Mavengence](https://github.com/Mavengence)
+* **Florian Cimander** - [GitHub flocimander](https://github.com/flocimander)
+* **Simon Hölck**
 
 ## License
 I used the Minimax from here:
