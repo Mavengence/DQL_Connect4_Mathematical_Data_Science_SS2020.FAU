@@ -1,5 +1,3 @@
-# DQL_Connect4_Mathematical_Data_Science_SS2020.FAU
-
 <div style="border-bottom:none;">
 <div align="center">
 <img style="border-bottom:none;" src="imgs/natfak.jpg">
