@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="82e5dcba-68af-4559-a1bb-8ed2c8c37b27" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="JupyterTrust" id="591b6a2e-23fc-4e9f-b95b-315d591ad85e" />
+  <component name="ProjectId" id="1g0YconfX82iKObBCnnFoUetQhc" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="ToolWindowDuplicates.ShowToolbar" value="false" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
+    <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
+      <module name="Connect4" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="82e5dcba-68af-4559-a1bb-8ed2c8c37b27" name="Default Changelist" comment="" />
+      <created>1597253058949</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1597253058949</updated>
+      <workItem from="1597253059966" duration="10353000" />
+      <workItem from="1597303848466" duration="41000" />
+      <workItem from="1597425418367" duration="4208000" />
+      <workItem from="1597501219203" duration="4845000" />
+      <workItem from="1597609301727" duration="266000" />
+      <workItem from="1597663709610" duration="20504000" />
+      <workItem from="1597754271702" duration="20000" />
+      <workItem from="1597756572093" duration="7014000" />
+      <workItem from="1597823916990" duration="20349000" />
+      <workItem from="1598001879325" duration="973000" />
+      <workItem from="1598096571177" duration="3317000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="952" y="426" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1597764835766">
+      <screen x="0" y="23" width="2560" height="1417" />
+    </state>
+    <state x="952" y="426" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/-1920.296.1920.1057/0.23.2560.1417@0.23.2560.1417" timestamp="1597764835766" />
+    <state x="548" y="492" key="FileChooserDialogImpl" timestamp="1597253357219">
+      <screen x="0" y="23" width="2560" height="1417" />
+    </state>
+    <state x="548" y="492" key="FileChooserDialogImpl/-1920.296.1920.1057/0.23.2560.1417@0.23.2560.1417" timestamp="1597253357219" />
+    <state x="861" y="341" width="838" height="1032" key="search.everywhere.popup" timestamp="1597867357798">
+      <screen x="0" y="23" width="2560" height="1417" />
+    </state>
+    <state x="861" y="341" width="838" height="1032" key="search.everywhere.popup/-1920.296.1920.1057/0.23.2560.1417@0.23.2560.1417" timestamp="1597867357798" />
+  </component>
+</project>

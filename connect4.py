@@ -41,7 +41,6 @@ WIDTH = COLUMN_COUNT * SQUARESIZE
 HEIGHT = (ROW_COUNT + 1) * SQUARESIZE
 SIZE = (WIDTH, HEIGHT)
 RADIUS = int(SQUARESIZE / 2 - 5)
-EMPTY = 0
 
 
 def create_board():
@@ -212,28 +211,28 @@ def score_position(board, piece):
         row_array = [int(i) for i in list(board[r, :])]
 
         for c in range(COLUMN_COUNT - 3):
-            window = row_array[c: c + 6]
-            score += evaluate_window(window, piece)
+            window = row_array[c: c + 4]
+            score += evaluate_windows(window, piece)
 
     ## vertical score
     for c in range(COLUMN_COUNT):
         col_array = [int(i) for i in list(board[:, c])]
 
         for r in range(ROW_COUNT - 3):
-            window = col_array[r: r + 5]
-            score += evaluate_window(window, piece)
+            window = col_array[r: r + 4]
+            score += evaluate_windows(window, piece)
 
     ## diagonal positive score
     for r in range(ROW_COUNT - 3):
         for c in range(COLUMN_COUNT - 3):
             window = [board[r + i][c + i] for i in range(WINDOW_LENGTH)]
-            score += evaluate_window(window, piece)
+            score += evaluate_windows(window, piece)
 
     ## diagonal negative score
     for r in range(ROW_COUNT - 3):
         for c in range(COLUMN_COUNT - 3):
             window = [board[r + 3 - i][c + i] for i in range(WINDOW_LENGTH)]
-            score += evaluate_window(window, piece)
+            score += evaluate_windows(window, piece)
 
     return score
 
@@ -249,7 +248,27 @@ def is_terminal_node(board):
     return winning_move(board, PLAYER_PIECE) or winning_move(board, AI_PIECE) or len(get_valid_locations(board)) == 0
 
 
+#used this for training in depth 1
 def evaluate_windows(window, piece):
+    score = 0
+    opp_piece = PLAYER_PIECE
+    if piece == PLAYER_PIECE:
+        opp_piece = AI_PIECE
+
+    if window.count(piece) == 4:
+        score += 100
+    elif window.count(piece) == 3 and window.count(0) == 1:
+        score += 5
+    elif window.count(piece) == 2 and window.count(0) == 2:
+        score += 2
+
+    if window.count(opp_piece) == 3 and window.count(0) == 1:
+        score -= 4
+
+    return score
+
+#much better evaluate windows but its not trained on this evaluation
+def evaluate_window(window, piece):
     """
         INPUT:
             - board: the board from create_board()
@@ -267,6 +286,10 @@ def evaluate_windows(window, piece):
 
     if window.count(piece) == 3 and window.count(0) <= 1:
         score += 20
+
+    if window.count(opponent_piece) >= 2:
+        print("HURENSOHn")
+        score -= 10000000000
 
     elif window.count(piece) == 3 and window.count(0) >= 1 and window.count(opponent_piece) >= 1:
         score -= 20
@@ -294,30 +317,6 @@ def evaluate_windows(window, piece):
 
     elif window.count(opponent_piece) == 2 and window.count(0) > 2:
         score -= 10
-
-    return score
-
-
-def evaluate_window(window, piece):
-    score = 0
-
-    #PLAYER = 0
-    #AI = 1
-    #PLAYER_PIECE = 1
-    #AI_PIECE = 2
-    opp_piece = PLAYER_PIECE
-    if piece == AI_PIECE:
-        opp_piece = PLAYER_PIECE
-    print(f"Count: {window.count(piece)} | Opponent Count: {window.count(opp_piece)} | Window = {window} | Piece = {piece}")
-    if window.count(piece) == 4:
-        score += 100
-    elif window.count(piece) == 3 and window.count(EMPTY) == 1:
-        score += 5
-    elif window.count(piece) == 2 and window.count(EMPTY) == 2:
-        score += 2
-
-    if window.count(opp_piece) == 3 and window.count(EMPTY) == 1:
-        score -= 4
 
     return score
 
@@ -426,12 +425,12 @@ class Game:
         Game class will be initialized for each training function like play_minimax.
         This class creates the board and offers print and win checking function.
     """
-
     def __init__(self, cols=7, rows=6, requiredToWin=4):
         self.cols = cols
         self.rows = rows
         self.win = requiredToWin
         self.board = [[0] * rows for _ in range(cols)]
+
 
     def insert(self, column, color):
         """Insert the color in the given column."""
@@ -459,7 +458,7 @@ class Game:
 
     def getWinner(self):
         """Get the winner on the current board."""
-        global horizontal_win
+        global vertical_win
         global done
         lines = (
             self.board,  # columns
@@ -471,7 +470,7 @@ class Game:
         for sublist in self.board:
             if sublist[0] == sublist[1] == sublist[2] == sublist[3] or sublist[1] == sublist[2] == sublist[3] == \
                     sublist[4] or sublist[2] == sublist[3] == sublist[4] == sublist[5]:
-                horizontal_win = True
+                vertical_win = True
 
         for line in chain(*lines):
             for color, group in groupby(line):
@@ -486,7 +485,6 @@ class Game:
         if counter == 42:
             done = True
             return Tie
-
 
     def printBoard(self):
         """Print the board."""
@@ -517,7 +515,7 @@ def play():
         g.printBoard()
         if turn == PLAYER:
             row = input('{}\'s turn:'.format('Red'))
-            g.insert(int(row), turn)
+            g.insert(int(row), PLAYER_PIECE)
         else:
             observation = []
             for sublist in g.board:
@@ -527,13 +525,13 @@ def play():
             action = agent.choose_action(observation)
             if g.check_if_action_valid(action):
                 print('{}\'s turn: %d'.format('Yellow') % action)
-                g.insert(action, turn)
+                g.insert(action, AI_PIECE)
             else:
                 while g.check_if_action_valid(action) == False:
                     agent.store_transition(observation, action, -100, observation, done)
-                    action = agent.choose_action(observation)
+                    action = action = np.random.randint(7)
                 print('{}\'s turn: %d'.format('Yellow') % action)
-                g.insert(action, turn)
+                g.insert(action, AI_PIECE)
             observation_ = []
             for sublist in g.board:
                 for i in sublist:
@@ -557,7 +555,7 @@ def selfplay():
     """
         legacy function for trying to implement self-play reinforcement learning like alpha-zero Go
     """
-    agent2 = Agent(0.99, 0.1, 0.003, [42], train_games, 7, eps_dec)
+    agent2 = Agent(0.99, 0.1, 0.003, 42, train_games, 7, eps_dec)
     agent2.load_checkpoint()
     global win_cntr
     global done
@@ -579,13 +577,13 @@ def selfplay():
             action = agent2.choose_action(observation)
             if g.check_if_action_valid(action):
                 print('{}\'s turn: %d'.format('Red') % action)
-                g.insert(action, turn)
+                g.insert(action, PLAYER_PIECE)
             else:
                 while g.check_if_action_valid(action) == False:
                     agent.store_transition(observation, action, -100, observation, done)
                     action = np.random.randint(7)
                 print('{}\'s turn: %d'.format('Red') % action)
-                g.insert(action, turn)
+                g.insert(action, PLAYER_PIECE)
             observation_ = []
             for sublist in g.board:
                 for i in sublist:
@@ -601,13 +599,13 @@ def selfplay():
             action = agent.choose_action(observation)
             if g.check_if_action_valid(action):
                 print('{}\'s turn: %d'.format('Yellow') % action)
-                g.insert(action, turn)
+                g.insert(action, AI_PIECE)
             else:
                 while g.check_if_action_valid(action) == False:
                     agent.store_transition(observation, action, -100, observation, done)
-                    action = agent.choose_action(observation)
+                    action = np.random.randint(7)
                 print('{}\'s turn: %d'.format('Yellow') % action)
-                g.insert(action, turn)
+                g.insert(action, AI_PIECE)
             observation_ = []
             for sublist in g.board:
                 for i in sublist:
@@ -621,14 +619,14 @@ def selfplay():
         winner = AI if turn == PLAYER else PLAYER
         if winner == AI:
             win_cntr += 1
-            if horizontal_win:
+            if vertical_win:
                 reward_agent = 5
             else:
                 reward_agent = 20
-                reward_agent2 = -20
+
         else:
             reward_agent = -20
-            reward_agent2 = 20
+
     for i in range(len(transitions_agent)):
         agent.store_transition(transitions_agent[i][0], transitions_agent[i][1], reward_agent, transitions_agent[i][2],
                                transitions_agent[i][3])
@@ -636,7 +634,7 @@ def selfplay():
     return
 
 
-def play_minimax(depth):
+def play_minimax(minimax_dep):
     """
         Our primary function for training our reinforcement model. The depth equals the strength and looks into
         the future of the minimax. This function executed plays against the minimax from the top.
@@ -644,15 +642,15 @@ def play_minimax(depth):
     global win_cntr
     global lose_cntr
     global done
-    global horizontal_win
-    horizontal_win = False
+    global vertical_win
+    vertical_win = False
     g = Game()
     turn = np.random.randint(2)
     done = False
     transitions_agent = []
     transitions_agent2 = []
     while done == False:
-        g.printBoard()
+        #g.printBoard()
 
         # Player 1 dqn agent
         if turn == PLAYER:
@@ -668,7 +666,7 @@ def play_minimax(depth):
             else:
                 while g.check_if_action_valid(action) == False:
                     agent.store_transition(observation, action, -100, observation, done)
-                    action = agent.choose_action(observation)
+                    action = np.random.randint(7)
                 g.insert(action, PLAYER_PIECE)
             observation_ = []
             for sublist in g.board:
@@ -688,8 +686,8 @@ def play_minimax(depth):
 
             observation = np.asarray(observation)
 
-            if np.random.rand(1) > decay:
-                action, _ = minimax(np.flipud(obs), depth, -math.inf, math.inf, True)
+            if minimax_dep > 0: #and np.random.rand(1) > 0.05
+                action, _ = minimax(np.flipud(obs), minimax_dep, -math.inf, math.inf, True)
             else:
                 action = np.random.randint(7)
 
@@ -711,23 +709,23 @@ def play_minimax(depth):
         turn = (turn + 1) % 2
 
     if g.getWinner() == Tie:
-        reward_minimax = -5
-        reward_nn = -5
+        #reward_minimax = -1
+        reward_nn = -1
     else:
         winner = AI if turn == PLAYER else PLAYER
 
         if winner == AI:
             lose_cntr += 1
-            reward_minimax = 200
-            reward_nn = -200
+            #reward_minimax = 20
+            reward_nn = -20
         else:
             win_cntr += 1
-            reward_minimax = -200
-            reward_nn = 200
+            #reward_minimax = -20
+            reward_nn = 20
 
-    for obs in range(len(transitions_agent)):
+    '''for obs in range(len(transitions_agent)):
         agent.store_transition(transitions_agent[obs][0], transitions_agent[obs][1], reward_minimax,
-                               transitions_agent[obs][2], transitions_agent[obs][3])
+                               transitions_agent[obs][2], transitions_agent[obs][3])'''
     for i in range(len(transitions_agent2)):
         agent.store_transition(transitions_agent2[i][0], transitions_agent2[i][1], reward_nn, transitions_agent2[i][2],
                                transitions_agent2[i][3])
@@ -763,7 +761,7 @@ def play_against_minimax():
                     obs[col, row] = i
 
             observation = np.asarray(observation)
-            action, _ = minimax(np.flipud(obs), 1, -math.inf, math.inf, True)
+            action, _ = minimax(np.flipud(obs), 5, -math.inf, math.inf, True)
             if g.check_if_action_valid(action):
                 print('{}\'s turn: %d'.format('Yellow') % action)
                 g.insert(action, AI_PIECE)
@@ -780,66 +778,6 @@ def play_against_minimax():
             observation_ = np.asarray(observation_)
             transitions_agent += [(observation, action, observation_, done)]
         turn = (turn + 1) % 2
-    return
-
-
-def play_random_agent():
-    global horizontal_win
-    global win_cntr
-    global done
-    done = False
-    horizontal_win = False
-    g = Game()
-    turn = random.choice([PLAYER, AI])
-    transitions_agent = []
-    while done == False:
-        #g.printBoard()
-        if turn == PLAYER:
-            action = np.random.randint(7)
-            if g.check_if_action_valid(action):
-                #print('{}\'s turn: %d'.format('Red')%action)
-                g.insert(action, PLAYER_PIECE)
-            else:
-                while g.check_if_action_valid(action) == False:
-                    action = np.random.randint(7)
-                g.insert(action,PLAYER_PIECE)
-        else:
-            observation = []
-            for sublist in g.board:
-                for i in sublist:
-                    observation.append(i)
-            observation = np.asarray(observation)
-            action = agent.choose_action(observation)
-            if g.check_if_action_valid(action):
-                #print('{}\'s turn: %d'.format('Yellow')%action)
-                g.insert(action,AI_PIECE)
-            else:
-                while g.check_if_action_valid(action) == False:
-                    agent.store_transition(observation, action, -100, observation, done)
-                    action = agent.choose_action(observation)
-                #print('{}\'s turn: %d'.format('Yellow')%action)
-                g.insert(action,AI_PIECE)
-            observation_ = []
-            for sublist in g.board:
-                for i in sublist:
-                    observation_.append(i)
-            observation_ = np.asarray(observation_)
-            transitions_agent += [(observation, action, observation_, done)]
-        turn = AI if turn == PLAYER else PLAYER
-    if g.getWinner() == Tie:
-        reward = 0
-    winner = AI if turn == PLAYER else PLAYER
-    if winner == AI:
-        win_cntr += 1
-        if horizontal_win:
-            reward = 5
-        else:
-            reward = 60
-    else:
-        reward = -20
-    for i in range(len(transitions_agent)):
-        agent.store_transition(transitions_agent[i][0], transitions_agent[i][1], reward, transitions_agent[i][2], transitions_agent[i][3])
-    agent.learn()
     return
 
 
@@ -897,12 +835,14 @@ def play_gui():
             # # Ask for Player 2 Input
         if turn == AI and not GAME_OVER:
             observation = []
-            obs = np.zeros((6, 7))
-            for row, sublist in enumerate(g.board):
-                for col, i in enumerate(sublist):
-                    observation.append(i)
-                    obs[col, row] = i
+            #print(f"BOARD: {board}")
+            temp_board = np.flipud(board)
+            for col in range(COLUMN_COUNT):
+                col_elements = temp_board[:,col]
+                for element in col_elements:
+                    observation.append(element)
 
+            #print(f"OBS: {observation}")
             observation = np.asarray(observation)
             col = agent.choose_action(observation)
 
@@ -933,32 +873,95 @@ def play_gui():
                 turn = (turn + 1) % 2
 
 
-# Initialize hyperparameters and metrics
-train_games = 1
-win_cntr = 0
-lose_cntr = 0
-eps_dec = 1 / train_games
-win_array = []
+def play_random_agent():
+    global vertical_win
+    global win_cntr
+    global done
+    done = False
+    vertical_win = False
+    g = Game()
+    turn = random.choice([PLAYER, AI])
+    transitions_agent = []
+    while done == False:
+        g.printBoard()
+        if turn == PLAYER:
+            action = np.random.randint(7)
+            if g.check_if_action_valid(action):
+                print('{}\'s turn: %d'.format('Red')%action)
+                g.insert(action, PLAYER_PIECE)
+            else:
+                while g.check_if_action_valid(action) == False:
+                    action = np.random.randint(7)
+                g.insert(action,PLAYER_PIECE)
+                print('{}\'s turn: %d'.format('Red') % action)
+        else:
+            observation = []
+            for sublist in g.board:
+                for i in sublist:
+                    observation.append(i)
+            observation = np.asarray(observation)
+            action = agent.choose_action(observation)
+            if g.check_if_action_valid(action):
+                print('{}\'s turn: %d'.format('Yellow')%action)
+                g.insert(action,AI_PIECE)
+            else:
+                while g.check_if_action_valid(action) == False:
+                    agent.store_transition(observation, action, -100, observation, done)
+                    action = np.random.randint(7)
+                print('{}\'s turn: %d'.format('Yellow')%action)
+                g.insert(action,AI_PIECE)
+            observation_ = []
+            for sublist in g.board:
+                for i in sublist:
+                    observation_.append(i)
+            observation_ = np.asarray(observation_)
+            transitions_agent += [(observation, action, observation_, done)]
+        turn = AI if turn == PLAYER else PLAYER
+    if g.getWinner() == Tie:
+        reward = 0
+    winner = AI if turn == PLAYER else PLAYER
+    if winner == AI:
+        win_cntr += 1
+        if vertical_win:
+            reward = 5
+        else:
+            reward = 60
+    else:
+        reward = -20
+    for i in range(len(transitions_agent)):
+        agent.store_transition(transitions_agent[i][0], transitions_agent[i][1], reward, transitions_agent[i][2], transitions_agent[i][3])
+    agent.learn()
+    return
 
-decay = 0.05
-agent = Agent(0.99, 1, 0.01, 42, 128, 7, eps_dec)
+
+
+
+# Initialize hyperparameters and metrics
+
+train_games = 1
+minimax_dep = 3
+epsilon = 0 #because play with trained data - it will use min_eps with 0.01
+eps_dec = 0.9999 #doesn't matter with epsilon = 0
+print_episode = 100
+
+
+agent = Agent(0.99, epsilon, 0.01, 42, 64, 7, eps_dec)
 agent.load_checkpoint()
 
-# Start reinforcement learning process
+
+lose_cntr = 0
+win_cntr = 0
+win_dif = 0
+
 for i in range(train_games):
-    win_array.append((win_cntr / (i + 1)))
-    if i % 100 == 0:
-        print(f"Episode {i} trained successfully | Games Won: {win_cntr / (i + 1)} | Games Lost: {lose_cntr / (i + 1)}")
-    play_minimax(1)
+    if i == 0:
+        print(f'Start simulation for minimax with depth {minimax_dep}...')
+    elif (i) % print_episode == 0:
+        win_dif = win_cntr - win_dif
+        print(f"Episode {i} trained successfully | Games won: {int(win_cntr)} | Games won in last {print_episode} episodes: {round((win_dif * 100/ print_episode), 2)}% | Decay: {round((epsilon * eps_dec ** i) *100 if (epsilon * eps_dec ** i) > 0.01 else 0.01, 2)}%")
+        win_dif = win_cntr
+    play_minimax(minimax_dep)
 
-print(win_cntr)
-print(win_cntr / train_games)
+
 agent.save_checkpoint()
-
-plt.plot(np.arange(1, train_games + 1), win_array)
-plt.xticks(np.linspace(0, 20000, 11))
-plt.xlabel("Episodes")
-plt.ylabel("Win ratio")
-plt.show()
-
 play_gui()
