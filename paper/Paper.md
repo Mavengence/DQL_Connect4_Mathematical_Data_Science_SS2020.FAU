@@ -31,7 +31,7 @@ As we humans learn, it is by exploring / doing new things and getting rewards po
 4.	State – the state of the agent in the environment
 5.	Reward – for each action selected by the agent the environment provides a reward. Usually a scalar value
 
-<div align="center"><img src="pics/rl_aufbau.jpg" alt="structure of a RL learning process" style="zoom:67%;" /></div>
+<div align="center"><img src="../imgs/rl_aufbau.jpg" alt="structure of a RL learning process" style="zoom:67%;" /></div>
 [source](http://www.incompleteideas.net/book/ebook/node28.html)
 
 So environments are functions that transform an action taken in the current state into the next state and a reward; agents are functions that transform the new state and reward into the next action. Most of the time we don't know the function of the environment. It is a black box where we only see the inputs and outputs. Reinforcement Learning represents an agent’s attempt to approximate the environment’s function, such that we can send actions into the black-box environment that maximize the rewards.
@@ -46,7 +46,7 @@ As for our setting - the connect four environment - we can not reward every move
 
 We decided to take a deeper look in the Model-free RL part. This means we have to learn directly out of the environment, which can achieve the same optimal behavior as model based RL algorithms.
 
-<div align="center"><img src="pics/rl_algo.jpg" alt="structure of a RL learning process" style="zoom:80%;" /></div>
+<div align="center"><img src="../img/rl_algo.jpg" alt="structure of a RL learning process" style="zoom:80%;" /></div>
 [source](https://spinningup.openai.com/en/latest/spinningup/rl_intro2.html)
 
 We chose Deep Q Learning (DQN) out of interest, because of its simple structure and the possibility to work with Neural Networks. DQN is based on Q Learning, which stores for every game state the best possible move in a Q-Table. This table for our environment would have been around 4 quadrillion entries big – way too big for our computers.
@@ -58,7 +58,7 @@ We chose Deep Q Learning (DQN) out of interest, because of its simple structure 
 
 Q Learning is a value-based RL algorithm. The Q stands for quality - how useful a given action is in gaining some future reward. This means that the algorithm stores values in the Q-Table which have the maximum expected future reward for that given state and action. For updating the values of this Q-Table, you use the Q Learning formula, which takes just the state and the action as input. And returns the expected future reward of that action and state.
 
-<div align="center"><img src="pics/q_algo.jpg" alt="Q Learning Function" style="zoom: 50%;" /></div>
+<div align="center"><img src="../img/q_algo.jpg" alt="Q Learning Function" style="zoom: 50%;" /></div>
 
 
 
@@ -348,13 +348,13 @@ We use:
 
 We let the network train with the set of hyperparameters mentioned above. We can clearly see the learning progress the longer we let the network train.
 
-<div align="center"><img src="pics/minimax1.jpg" alt="against minimax depth 1" style="zoom:100%;" /></div>
+<div align="center"><img src="../img/minimax1.jpg" alt="against minimax depth 1" style="zoom:100%;" /></div>
 
 After around 40.000 episodes we see a jump, which indicates a winning strategy over the Minimax with depth one was found. As the Minimax plays the same moves for every state our agent will exploit this knowledge and win every time if the decay is low.
 
 In this plot we trained against the Minimax with depth two. We can see an exponential learning progress - to reach 100% it will need a lot more time and computational power...
 
-<div align="center"><img src="pics/minmax2.jpg" alt="against minimax depth 1" style="zoom:100%;" /></div>
+<div align="center"><img src="../img/minmax2.jpg" alt="against minimax depth 1" style="zoom:100%;" /></div>
 
 Using this model, we can also see a dramatic increase of wins against the depth two Minimax starting from epoch 4000. Unfortunately this training took already very long.
 
