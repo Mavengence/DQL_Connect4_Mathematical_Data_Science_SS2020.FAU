@@ -11,7 +11,7 @@ Reinforcement learning of Connect4 against the famous Minimax algorithm
 
 ## Getting Started
 
-Clone the repository, to get our Notebooks, Presentation and Project Report.
+Clone the repository, to get the Python files, a simple trained model, Presentation and Project Report.
 
 ```
 git clone https://github.com/Mavengence/DQL_Connect4_Mathematical_Data_Science_SS2020.FAU.git
@@ -23,11 +23,9 @@ git clone https://github.com/Mavengence/DQL_Connect4_Mathematical_Data_Science_S
 - Final Presentation as [PDF](https://github.com/Mavengence/DQL_Connect4_Mathematical_Data_Science_SS2020.FAU/blob/master/presentation/Presentation.pdf)
 - Final Paper as [PDF](https://github.com/Mavengence/DQL_Connect4_Mathematical_Data_Science_SS2020.FAU/blob/master/paper/Paper.pdf)
 
-### Run the Notebook
+### Run training
 
 ```
-cd/you_cloned_repo_location jupyter notebook
-
 python connect4.py
 ```
 
