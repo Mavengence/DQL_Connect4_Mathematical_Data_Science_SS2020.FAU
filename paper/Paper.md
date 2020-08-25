@@ -188,46 +188,51 @@ After every game all the information the agent gained during that game will be s
         self.mem_cntr += 1
 ```
 
-The agent learns the saved transitions in batches that are chosen randomly from its memory because it would be very time consuming to iterate over all transitions every time the learn method is called (after every game). For learning we use the Q-Learning formula and then use the mean squared error to compute the loss between the q_target value given by the equation and the value q_eval given by the current network state. After that we perform backpropagation and update the networks parameters using the calculated gradients.
+The agent learns the saved transitions in batches that are chosen randomly from its memory. This is done to lower the correlation between the transitions because a high correlation would lead to overfitting. For learning we use the Q-Learning formula and then use the mean squared error to compute the loss between the q_target value given by the equation and the value q_eval given by the current network state. After that we perform backpropagation and update the networks parameters using the calculated gradients. In order to make the learning process more stationary, we use a so-called target network to get the maximum Q value in the target computation. The target network is an old version of the underlying DQN network that gets updated very infrequently. This is so important because deep neural networks are known to perform particularly bad on non-stationary problems.
 
 ```python
 def learn(self):
-    # only start learning if enough memories to fill up batch
-    if self.mem_cntr < self.batch_size:
-        return
+        # only start learning if enough memories to fill up batch
+        if self.mem_cntr < self.batch_size:
+            return
 
-    for i in range(100):
-        #reset gradients
-        self.Q_eval.optimizer.zero_grad()
-
-        #choose random batch
-        max_mem = min(self.mem_cntr, self.mem_size)
-        batch = np.random.choice(max_mem, self.batch_size, replace=False)
-        batch_index = np.arange(self.batch_size, dtype=np.int32)
-
-        #get batches from memory
-        state_batch = T.tensor(self.state_memory[batch]).to(self.Q_eval.device)
-        new_state_batch = T.tensor(self.new_state_memory[batch]).to(self.Q_eval.device)
-        reward_batch = T.tensor(self.reward_memory[batch]).to(self.Q_eval.device)
-        terminal_batch = T.tensor(self.terminal_memory[batch]).to(self.Q_eval.device)
-        action_batch = self.action_memory[batch]
-
-        #compute current network output
-        q_eval = self.Q_eval.forward(state_batch)[batch_index, action_batch]
-        q_next = self.Q_eval.forward(new_state_batch)
-        q_next[terminal_batch] = 0.0
-
-        #q-update
-        q_target = reward_batch + self.gamma * T.max(q_next, dim=1)[0]
-        #compute loss(mse)
-        loss = self.Q_eval.loss(q_target, q_eval).to(self.Q_eval.device)
-        #backprop
-        loss.backward()
-        #apply calculated gradients
-        self.Q_eval.optimizer.step()
-
-	#update epsilon decay
-	self.epsilon = self.epsilon * self.eps_dec if self.epsilon > self.eps_min else self.eps_min
+        for i in range(100):
+            #reset gradients
+            self.Q_eval.optimizer.zero_grad()
+            
+            #choose random batch
+            max_mem = min(self.mem_cntr, self.mem_size)
+            batch = np.random.choice(max_mem, self.batch_size, replace=False)
+            batch_index = np.arange(self.batch_size, dtype=np.int32)
+            
+            #get batches from memory
+            state_batch = T.tensor(self.state_memory[batch]).to(self.Q_eval.device)
+            new_state_batch = T.tensor(self.new_state_memory[batch]).to(self.Q_eval.device)
+            reward_batch = T.tensor(self.reward_memory[batch]).to(self.Q_eval.device)
+            terminal_batch = T.tensor(self.terminal_memory[batch]).to(self.Q_eval.device)
+            action_batch = self.action_memory[batch]
+            
+            #compute current network output
+            q_eval = self.Q_eval.forward(state_batch)[batch_index, action_batch]
+            q_next = self.target_net.forward(new_state_batch)
+            q_next[terminal_batch] = 0.0
+            
+            #q-update
+            q_target = reward_batch + self.gamma * T.max(q_next, dim=1)[0]
+            #compute loss(mse)
+            loss = self.Q_eval.loss(q_target, q_eval).to(self.Q_eval.device)
+            #backprop
+            loss.backward()
+            #apply calculated gradients
+            self.Q_eval.optimizer.step()
+        
+        #update epsilon decay
+        self.epsilon = self.epsilon * self.eps_dec if self.epsilon > self.eps_min else self.eps_min
+        
+        #check if target network needs to be updated
+        self.target_cntr += 1
+        if self.target_cntr%1000 == 0:
+            self.target_net.load_state_dict(self.Q_eval.state_dict())
 ```
 
 
